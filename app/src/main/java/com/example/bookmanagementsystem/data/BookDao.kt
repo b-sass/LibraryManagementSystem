@@ -1,7 +1,6 @@
 package com.example.bookmanagementsystem.data
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -22,8 +21,5 @@ interface BookDao {
     fun addBook(book: Book)
 
     @Update
-    fun updateBook(id: Int)
-
-    @Delete
-    fun deleteBook(id: Int)
+    fun updateBook(book: Book)
 }
