@@ -35,8 +35,10 @@ fun BookAddView() {
     var genre by remember { mutableStateOf("") }
     var totalPages by remember { mutableStateOf("") }
 
+    // Snackbar coroutine
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
 
     Scaffold(
         topBar = {
@@ -46,7 +48,7 @@ fun BookAddView() {
         },
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -90,6 +92,7 @@ fun BookAddView() {
                 onClick = {
                     if (listOf(title, author, totalPages).any { s -> s.isEmpty() }) {
                             scope.launch {
+                                snackbarHostState.currentSnackbarData?.dismiss()
                                 snackbarHostState.showSnackbar("Title, Author, and Total Pages fields cannot be empty.")
                             }
                         }
@@ -99,6 +102,7 @@ fun BookAddView() {
                         genre = ""
                         totalPages = ""
                         scope.launch {
+                            snackbarHostState.currentSnackbarData?.dismiss()
                             snackbarHostState.showSnackbar("Book added to library.")
                         }
                     }
