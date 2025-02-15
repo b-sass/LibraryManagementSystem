@@ -27,12 +27,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookmanagementsystem.data.Book
 import com.example.bookmanagementsystem.viewmodel.BookAddViewModel
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookAddView(
     viewModel: BookAddViewModel = viewModel(),
-    book: Book,
     onBookSubmit: () -> Unit
     ) {
     var title by remember { mutableStateOf("") }
@@ -102,6 +102,14 @@ fun BookAddView(
                             }
                         }
                     else {
+                        val newBook = Book(
+                            title = title,
+                            author = author,
+                            genre = genre,
+                            pagesTotal = totalPages
+                        )
+
+
                         title = ""
                         author = ""
                         genre = ""
@@ -111,6 +119,7 @@ fun BookAddView(
                             snackbarHostState.showSnackbar("Book added to library.")
                         }
                         // Add book to db
+                        viewModel.addBook(newBook)
                         // navigate back
                         onBookSubmit()
                     }
