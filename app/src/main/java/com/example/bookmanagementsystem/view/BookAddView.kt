@@ -23,12 +23,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bookmanagementsystem.data.Book
+import com.example.bookmanagementsystem.viewmodel.BookAddViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookAddView() {
-
+fun BookAddView(
+    viewModel: BookAddViewModel = viewModel(),
+    book: Book,
+    onBookSubmit: () -> Unit
+    ) {
     var title by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     var genre by remember { mutableStateOf("") }
@@ -104,6 +110,9 @@ fun BookAddView() {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             snackbarHostState.showSnackbar("Book added to library.")
                         }
+                        // Add book to db
+                        // navigate back
+                        onBookSubmit()
                     }
                 },
 

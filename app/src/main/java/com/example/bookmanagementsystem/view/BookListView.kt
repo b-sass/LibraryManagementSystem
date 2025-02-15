@@ -1,52 +1,85 @@
 package com.example.bookmanagementsystem.view
 
-import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.room.Room
-import com.example.bookmanagementsystem.data.DatabaseInstance
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bookmanagementsystem.data.Book
+import com.example.bookmanagementsystem.viewmodel.BookListViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookListView(ctx: Context, onBookItemClicked: () -> Unit) {
-
-    val db = DatabaseInstance.getDatabase(ctx);
+fun BookListView(
+    viewModel: BookListViewModel = viewModel(),
+    onBookItemClicked: () -> Unit,
+    onAddButtonClicked: () -> Unit
+) {
+    val books by viewModel.books.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Book List") }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onAddButtonClicked() },
+            ) {
+                Icon(Icons.Filled.Add, "Add book")
+            }
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-        ) {
-            items(50) { _ ->
-                Row(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .clickable {
-                            onBookItemClicked()
-                        }
-                ) {
-                    Text("Book Title")
-                    Text("Book Author")
-                    Text("Book Genre")
-                    Text("Progress: 95%")
+        if (books.isEmpty()) {
+            Text("You have 0 books in your library.")
+        }
+        else {
+            Text("Your books:")
+            HorizontalDivider()
+            LazyColumn(
+                modifier = Modifier
+                    .padding(innerPadding)
+            ) {
+                items(books) { book ->
+                    Row(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .clickable {
+                                onBookItemClicked()
+                            }
+                    ){
+                        Text(book.title)
+                        Text(book.author)
+                        Text(book.genre ?: "")
+                        Text(book.pagesRead.toString())
+                    }
+                    HorizontalDivider()
                 }
-                HorizontalDivider()
             }
         }
     }

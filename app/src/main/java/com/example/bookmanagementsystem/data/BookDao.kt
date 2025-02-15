@@ -1,25 +1,30 @@
 package com.example.bookmanagementsystem.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BookDao {
 
     @Query("SELECT * FROM book")
-    fun getAllBooks(): List<Book>
+    fun getAllBooks(): Flow<List<Book>>
 
     @Query("SELECT * FROM book WHERE id = :id")
-    fun getBookById(id: Int): Book
+    fun getBookById(id: Int): Flow<Book>
 
     @Query("SELECT * FROM book WHERE title LIKE :title")
-    fun getBookByTitle(title: String): Book
+    suspend fun getBookByTitle(title: String): Book
 
     @Insert
-    fun addBook(book: Book)
+    suspend fun addBook(book: Book)
 
     @Update
-    fun updateBook(book: Book)
+    suspend fun updateBook(book: Book)
+
+    @Delete
+    suspend fun deleteBook(book: Book)
 }
