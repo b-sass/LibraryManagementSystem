@@ -39,6 +39,8 @@ class BookItemViewModel(app: Application): AndroidViewModel(app) {
     }
 
     fun deleteBook(book: Book) {
-
+        viewModelScope.launch {
+            bookDB.deleteBook(book)
+        }
     }
 }

@@ -111,41 +111,70 @@ fun BookItemView(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
-            Button(
-                onClick = {
-                    if (listOf(title, author, totalPages).any { s -> s.isEmpty() }) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Button(
+                    onClick = {
+                        if (listOf(title, author, totalPages).any { s -> s.isEmpty() }) {
                             scope.launch {
                                 snackbarHostState.currentSnackbarData?.dismiss()
                                 snackbarHostState.showSnackbar("Title, Author, and Total Pages fields cannot be empty.")
                             }
-                        }
-                    else {
-                        val newBook = Book(
-                            id = id ?: 0,
-                            title = title,
-                            author = author,
-                            genre = genre,
-                            pagesTotal = totalPages
-                        )
+                        } else {
+                            val newBook = Book(
+                                id = id ?: 0,
+                                title = title,
+                                author = author,
+                                genre = genre,
+                                pagesTotal = totalPages
+                            )
 
-                        scope.launch {
-                            snackbarHostState.currentSnackbarData?.dismiss()
-                            snackbarHostState.showSnackbar(if (id != null) {"Book $id updated."} else { "Book added to library."} )
-                        }
+                            scope.launch {
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                                snackbarHostState.showSnackbar(
+                                    if (id != null) {
+                                        "Book $id updated."
+                                    } else {
+                                        "Book added to library."
+                                    }
+                                )
+                            }
 
-                        if (id != null) {
-                            viewModel.updateBook(newBook)
+                            if (id != null) {
+                                viewModel.updateBook(newBook)
+                            } else {
+                                viewModel.addBook(newBook)
+                            }
+                            // navigate back
+                            onBookSubmit()
                         }
-                        else {
-                            viewModel.addBook(newBook)
+                    },
+
+                    ) {
+                    Text(
+                        if (id != null) { "Update Book" } else { "Add Book" }
+                    )
+                }
+
+                if (id != null) {
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                                snackbarHostState.showSnackbar(
+                                    "Book $id deleted."
+                                )
+                            }
+
+                            viewModel.deleteBook(existingBook!!)
+
+                            onBookSubmit()
                         }
-                        // navigate back
-                        onBookSubmit()
+                    ) {
+                        Text("Delete Book")
                     }
-                },
-
-            ) {
-                Text(if(id != null) {"Update Book"} else {"Add Book"})
+                }
             }
         }
     }
