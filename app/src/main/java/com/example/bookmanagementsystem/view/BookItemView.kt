@@ -121,6 +121,7 @@ fun BookItemView(
                         }
                     else {
                         val newBook = Book(
+                            id = id ?: 0,
                             title = title,
                             author = author,
                             genre = genre,
@@ -129,17 +130,22 @@ fun BookItemView(
 
                         scope.launch {
                             snackbarHostState.currentSnackbarData?.dismiss()
-                            snackbarHostState.showSnackbar("Book added to library.")
+                            snackbarHostState.showSnackbar(if (id != null) {"Book $id updated."} else { "Book added to library."} )
                         }
-                        // Add book to db
-                        viewModel.addBook(newBook)
+
+                        if (id != null) {
+                            viewModel.updateBook(newBook)
+                        }
+                        else {
+                            viewModel.addBook(newBook)
+                        }
                         // navigate back
                         onBookSubmit()
                     }
                 },
 
             ) {
-                Text("Add Book")
+                Text(if(id != null) {"Update Book"} else {"Add Book"})
             }
         }
     }
