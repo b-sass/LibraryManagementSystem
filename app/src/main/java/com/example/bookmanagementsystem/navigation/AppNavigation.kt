@@ -5,7 +5,9 @@ import androidx.navigation.NavDirections
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.bookmanagementsystem.view.BookAddView
+import androidx.navigation.toRoute
+import com.example.bookmanagementsystem.data.Book
+import com.example.bookmanagementsystem.view.BookItemView
 import com.example.bookmanagementsystem.view.BookListView
 import kotlinx.serialization.Serializable
 
@@ -19,16 +21,22 @@ fun AppNavigation() {
         startDestination = BookList
     ) {
         composable<BookList> { BookListView(
-            onBookItemClicked = {navController.navigate(BookAdd)},
-            onAddButtonClicked = {navController.navigate(BookAdd)},
+            onBookItemClicked = {navController.navigate(BookItem(it))},
+            onAddButtonClicked = {navController.navigate(BookItem())},
         ) }
-        composable<BookAdd> { BookAddView(
-            onBookSubmit = {navController.navigateUp()}
-        ) }
+        composable<BookItem> { backStackEntry ->
+            val args = backStackEntry.toRoute<BookItem>()
+            BookItemView(
+                id = args.bookID,
+                onBookSubmit = {navController.popBackStack()}
+            )
+        }
     }
 }
 
 @Serializable
 object BookList
 @Serializable
-object BookAdd
+data class BookItem(
+    val bookID: Int? = null
+)

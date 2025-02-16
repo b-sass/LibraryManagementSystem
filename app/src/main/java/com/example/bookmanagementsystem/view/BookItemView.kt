@@ -13,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,22 +25,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookmanagementsystem.data.Book
-import com.example.bookmanagementsystem.viewmodel.BookAddViewModel
+import com.example.bookmanagementsystem.viewmodel.BookItemViewModel
 import kotlinx.coroutines.launch
-import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookAddView(
-    viewModel: BookAddViewModel = viewModel(),
+fun BookItemView(
+    viewModel: BookItemViewModel = viewModel(),
+    id: Int?,
     onBookSubmit: () -> Unit
     ) {
-    var title by remember { mutableStateOf("") }
-    var author by remember { mutableStateOf("") }
-    var genre by remember { mutableStateOf("") }
-    var totalPages by remember { mutableStateOf("") }
+
+    if (id != null) {
+        viewModel.getBookByID(id)
+    }
+
+    val existingBook by viewModel.currentBook.collectAsStateWithLifecycle()
+
+    var title by remember { mutableStateOf(existingBook?.title ?: "") }
+    var author by remember { mutableStateOf(existingBook?.author ?: "") }
+    var genre by remember { mutableStateOf(existingBook?.genre ?: "") }
+    var totalPages by remember { mutableStateOf(existingBook?.pagesTotal ?: "") }
+
+    LaunchedEffect(existingBook) {
+        title = existingBook?.title ?: ""
+        author = existingBook?.author ?: ""
+        genre = existingBook?.genre ?: ""
+        totalPages = existingBook?.pagesTotal ?: ""
+    }
+
 
     // Snackbar coroutine
     val scope = rememberCoroutineScope()
@@ -48,7 +66,7 @@ fun BookAddView(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add book") }
+                title = { Text(if (id != null) {"Editing book $id"} else { "Add book"}) }
             )
         },
         snackbarHost = {
@@ -109,11 +127,6 @@ fun BookAddView(
                             pagesTotal = totalPages
                         )
 
-
-                        title = ""
-                        author = ""
-                        genre = ""
-                        totalPages = ""
                         scope.launch {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             snackbarHostState.showSnackbar("Book added to library.")

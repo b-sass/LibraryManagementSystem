@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BookListView(
     viewModel: BookListViewModel = viewModel(),
-    onBookItemClicked: () -> Unit,
+    onBookItemClicked: (bookID: Int) -> Unit,
     onAddButtonClicked: () -> Unit
 ) {
     val books by viewModel.books.collectAsStateWithLifecycle()
@@ -75,7 +75,7 @@ fun BookListView(
                             .fillMaxWidth()
                             .padding(16.dp)
                             .clickable {
-                                onBookItemClicked()
+                                onBookItemClicked(book.id)
                             }
                     ){
                         Column {
@@ -87,11 +87,10 @@ fun BookListView(
                         Column(
                             horizontalAlignment = Alignment.End
                         ) {
-                            Text(book.genre ?: "")
+                            Text("${book.id}")
                             Text("Read: ${book.pagesRead} | Total: ${book.pagesTotal}")
 
                         }
-
                     }
                     HorizontalDivider()
                 }
