@@ -17,7 +17,7 @@ interface BookDao {
     fun getBookById(id: Int): Flow<Book>
 
     @Query("SELECT * FROM book WHERE title LIKE :title")
-    suspend fun getBookByTitle(title: String): Book
+    fun getBooksByTitle(title: String): Flow<List<Book>>
 
     @Insert
     suspend fun addBook(book: Book)

@@ -35,4 +35,12 @@ class BookListViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
     }
+
+    fun searchBooks(query: String) {
+        viewModelScope.launch {
+            bookDB!!.getBooksByTitle(query).flowOn(Dispatchers.IO).collect() { books: List<Book> ->
+                _books.update { books }
+            }
+        }
+    }
 }

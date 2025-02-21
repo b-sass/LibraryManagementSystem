@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -13,6 +15,10 @@ android {
     compileSdk = 35
 
     defaultConfig {
+//        buildConfigField("String", "MAILJET_API_KEY", "\"${getMailJetKey()}\"")
+//        buildConfigField("String", "MAILJET_SECRET_API_KEY", "\"${getMailJetSecret()}\"")
+//        buildConfigField("String", "MAILJET_EMAIL", "\"${getMailJetEmail()}\"")
+
         applicationId = "com.example.bookmanagementsystem"
         minSdk = 24
         targetSdk = 35
@@ -43,6 +49,24 @@ android {
     }
 }
 
+fun getMailJetKey(): String {
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
+    return properties.getProperty("MAILJET_API_KEY") ?: ""
+}
+
+fun getMailJetSecret(): String {
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
+    return properties.getProperty("MAILJET_SECRET_API_KEY") ?: ""
+}
+
+fun getMailJetEmail(): String {
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
+    return properties.getProperty("MAILJET_EMAIL") ?: ""
+}
+
 dependencies {
 
     // Standard android libraries
@@ -70,4 +94,10 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json) //?
+
+    // Icons
+    implementation(libs.androidx.material.icons.extended)
+
+    //MailJet
+    implementation(libs.mailjet.client)
 }
