@@ -26,7 +26,7 @@ class BookItemViewModel(app: Application): AndroidViewModel(app) {
 
     fun getBookByID(id: Int) {
         viewModelScope.launch {
-            bookDB.getBookById(id).flowOn(Dispatchers.IO).collect() { book: Book ->
+            bookDB.getBookById(id).flowOn(Dispatchers.IO).collect { book: Book ->
                 _currentBook.update { book }
             }
         }

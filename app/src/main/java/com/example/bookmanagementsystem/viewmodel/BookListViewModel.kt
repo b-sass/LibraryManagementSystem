@@ -9,7 +9,6 @@ import com.example.bookmanagementsystem.data.DatabaseInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,7 +29,7 @@ class BookListViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getBooks() {
         viewModelScope.launch {
-            bookDB!!.getAllBooks().flowOn(Dispatchers.IO).collect() { books: List<Book> ->
+            bookDB!!.getAllBooks().flowOn(Dispatchers.IO).collect { books: List<Book> ->
                 _books.update { books }
             }
         }
@@ -38,7 +37,7 @@ class BookListViewModel(app: Application) : AndroidViewModel(app) {
 
     fun searchBooks(query: String) {
         viewModelScope.launch {
-            bookDB!!.getBooksByTitle(query).flowOn(Dispatchers.IO).collect() { books: List<Book> ->
+            bookDB!!.getBooksByTitle(query).flowOn(Dispatchers.IO).collect { books: List<Book> ->
                 _books.update { books }
             }
         }
