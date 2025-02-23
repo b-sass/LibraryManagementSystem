@@ -21,7 +21,6 @@ fun AppNavigation() {
         composable<BookList> { BookListView(
             onBookItemClicked = {navController.navigate(BookItem(it))},
             onAddButtonClicked = {navController.navigate(BookItem())},
-//            onFilterButtonClicked = {navController.navigate(route = Filter)}
         ) }
         composable<BookItem> { backStackEntry ->
             val args = backStackEntry.toRoute<BookItem>()

@@ -83,6 +83,7 @@ fun BookItemView(
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Book Title") },
+                placeholder = { Text("Enter book title") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
@@ -90,13 +91,15 @@ fun BookItemView(
                 value = author,
                 onValueChange = { author = it },
                 label = { Text("Book Author") },
+                placeholder = { Text("Enter book author") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
             TextField(
                 value = genre,
                 onValueChange = { genre = it },
-                label = { Text("Book Genre") },
+                label = { Text("Book Genre (Optional)") },
+                placeholder = { Text("Enter book genre") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
@@ -107,6 +110,7 @@ fun BookItemView(
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Total pages") },
+                placeholder = { Text("Enter book page count") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
@@ -125,7 +129,7 @@ fun BookItemView(
                                 id = id ?: 0,
                                 title = title,
                                 author = author,
-                                genre = genre,
+                                genre = if (genre == "") { "No genre" } else { genre },
                                 pagesTotal = totalPages
                             )
 
