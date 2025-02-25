@@ -193,7 +193,7 @@ fun FilterDialog(books: List<Book>, onDismissRequest: () -> Unit) {
     var genres: List<String> = emptyList()
 
     for (b in books) {
-        genres = genres.plus(b.genre!!)
+        genres = genres.plus(b.genre)
     }
 
     BasicAlertDialog(
