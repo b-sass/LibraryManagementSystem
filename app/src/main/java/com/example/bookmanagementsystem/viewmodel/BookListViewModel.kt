@@ -1,6 +1,7 @@
 package com.example.bookmanagementsystem.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bookmanagementsystem.data.Book
@@ -19,12 +20,19 @@ class BookListViewModel(app: Application) : AndroidViewModel(app) {
     private val _books = MutableStateFlow(emptyList<Book>())
     val books = _books.asStateFlow()
 
+    private var _appliedFilters: List<String> = mutableStateListOf()
+    var appliedFilters = _appliedFilters
+
+    private var _filteredBooks: List<Book> = mutableStateListOf()
+    var filteredBooks = _filteredBooks
+
 
     init {
         viewModelScope.launch {
             bookDB = DatabaseInstance.getDatabase(app.applicationContext).bookDao()
             getBooks()
         }
+        _appliedFilters = emptyList()
     }
 
     fun getBooks() {
@@ -41,5 +49,25 @@ class BookListViewModel(app: Application) : AndroidViewModel(app) {
                 _books.update { books }
             }
         }
+    }
+
+    fun getGenres(): Set<String> {
+        var genres: Set<String> = emptySet()
+
+        _books.value.forEach { book ->
+            genres = genres.plus(book.genre)
+        }
+        return genres
+    }
+
+    fun filterBooks(books: List<Book>): List<Book> {
+        filteredBooks = if (appliedFilters.isEmpty()) {
+            books
+        } else {
+            books.filter { book ->
+                appliedFilters.contains(book.genre)
+            }
+        }
+        return filteredBooks
     }
 }

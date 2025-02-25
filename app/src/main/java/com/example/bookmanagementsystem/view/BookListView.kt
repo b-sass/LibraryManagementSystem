@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BasicAlertDialog
@@ -23,6 +26,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,7 +34,9 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,9 +56,17 @@ fun BookListView(
     onAddButtonClicked: () -> Unit,
 ) {
     val books by viewModel.books.collectAsStateWithLifecycle()
+
     var searchToggle by remember {mutableStateOf(false)}
     var query by remember { mutableStateOf("")}
+
     var filter by remember { mutableStateOf(false) }
+    var sort by remember { mutableStateOf(false) }
+
+    // GET BOOKS FROM DATABASE
+    // FILTER OUT BOOKS BY GENRE
+    // SORT BOOKS
+    // DISPLAY BOOKS
 
     Scaffold(
         topBar = {
@@ -68,7 +82,11 @@ fun BookListView(
                     viewModel.getBooks()
             })
             } else {
-                DefaultBar(onSearch = {searchToggle = true}, onFilterButtonClicked = { filter = true })
+                DefaultBar(
+                    onSearch = { searchToggle = true },
+                    onSortButtonClicked = { },
+                    onFilterButtonClicked = { filter = true }
+                )
             }
         },
         floatingActionButton = {
@@ -80,13 +98,17 @@ fun BookListView(
         },
     ) { innerPadding ->
 
-        // Filter dialog
+//         Filter dialog
         if (filter) {
-            FilterDialog(books, onDismissRequest = { filter = false })
+            FilterDialog(viewModel) { filter = false }
         }
 
         // Sorting Dialog
-        // TODO: Add sorting dialog
+//        if (sort) {
+//            SortDialog(currentSort, onSortClicked = { sort = false }, onDismissRequest = { sort = false })
+//        }
+
+
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,7 +133,6 @@ fun BookListView(
                     modifier = Modifier.padding(8.dp)
                 )
             }
-
 
             // Display list of books
             if (books.isNotEmpty()) {
@@ -149,12 +170,12 @@ fun BookListView(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DefaultBar(onSearch: () -> Unit, onFilterButtonClicked: () -> Unit) {
+private fun DefaultBar(onSearch: () -> Unit, onSortButtonClicked: () -> Unit, onFilterButtonClicked: () -> Unit) {
     TopAppBar(
         title = { Text("MAD Library") },
         actions = {
             IconButton(onClick = {onSearch()}) { Icon(Icons.Filled.Search, "Search") }
-            IconButton(onClick = {}) { Icon(Icons.AutoMirrored.Filled.Sort, "Sort") }
+            IconButton(onClick = {onSortButtonClicked()}) { Icon(Icons.AutoMirrored.Filled.Sort, "Sort") }
             IconButton(onClick = {onFilterButtonClicked()}) { Icon(Icons.Filled.FilterList, "Filter") }
         }
     )
@@ -162,7 +183,7 @@ fun DefaultBar(onSearch: () -> Unit, onFilterButtonClicked: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(query: String, onQueryChange: (String) -> Unit = {}, onSearchClose: () -> Unit) {
+private fun SearchBar(query: String, onQueryChange: (String) -> Unit = {}, onSearchClose: () -> Unit) {
     TopAppBar(
         navigationIcon = { IconButton(onClick = {onSearchClose()}) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }},
         title = { TextField(
@@ -189,45 +210,65 @@ fun SearchBar(query: String, onQueryChange: (String) -> Unit = {}, onSearchClose
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterDialog(books: List<Book>, onDismissRequest: () -> Unit) {
-    var genres: List<String> = emptyList()
+private fun FilterDialog(
+    viewModel: BookListViewModel,
+    onDismissRequest: () -> Unit = {},
+) {
+    val appliedFilters = remember { mutableStateListOf<String>() }
+    val genres = remember { mutableStateListOf<String>() }
 
-    for (b in books) {
-        genres = genres.plus(b.genre)
+    appliedFilters.addAll(viewModel.appliedFilters)
+
+    LaunchedEffect(genres) {
+        genres.addAll(viewModel.getGenres())
     }
 
     BasicAlertDialog(
         onDismissRequest = { onDismissRequest() },
-
     ) {
-        Surface {
+        Surface(
+            shape = MaterialTheme.shapes.large,
+        ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(16.dp)
             ) {
-                genres.forEach { genre ->
-                    CheckboxRow(genre)
+                Text("Genres")
+                for (genre in genres) {
+                    Row() {
+                        Checkbox(
+                            checked = appliedFilters.contains(genre),
+                            onCheckedChange = {
+                                if (appliedFilters.contains(genre)) {
+                                    appliedFilters.remove(genre)
+                                } else {
+                                    appliedFilters.add(genre)
+                                }
+                            }
+                        )
+                        Spacer(modifier = Modifier.padding(8.dp))
+                        Text(genre)
+                    }
+                }
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Cancel",
+                        Modifier.clickable { onDismissRequest() }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    Text(
+                        text = "Apply",
+                        Modifier.clickable {
+                            viewModel.appliedFilters = appliedFilters
+                            onDismissRequest()
+                        }
+                    )
                 }
             }
         }
     }
 }
 
-@Composable
-fun CheckboxRow(name: String) {
-    var isChecked by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Checkbox(
-            checked = isChecked,
-            onCheckedChange = { isChecked = !isChecked},
-        )
-        Spacer(Modifier.padding(4.dp))
-        Text(name)
-    }
-}
