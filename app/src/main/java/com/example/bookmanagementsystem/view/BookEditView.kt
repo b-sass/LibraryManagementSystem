@@ -48,12 +48,14 @@ fun BookEditView(
     var title by remember { mutableStateOf(existingBook?.title ?: "") }
     var author by remember { mutableStateOf(existingBook?.author ?: "") }
     var genre by remember { mutableStateOf(existingBook?.genre ?: "") }
+    var pagesRead by remember { mutableStateOf(existingBook?.pagesRead ?: "") }
     var totalPages by remember { mutableStateOf(existingBook?.pagesTotal ?: "") }
 
     LaunchedEffect(existingBook) {
         title = existingBook?.title ?: ""
         author = existingBook?.author ?: ""
         genre = existingBook?.genre ?: ""
+        pagesRead = existingBook?.pagesRead ?: ""
         totalPages = existingBook?.pagesTotal ?: ""
     }
 
@@ -81,37 +83,48 @@ fun BookEditView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedTextField(
-                value = "",
+                value = title,
                 onValueChange = { title = it },
                 label = { Text("Book Title") },
-                placeholder = { Text("Title: $title") },
+                placeholder = { Text("Title: ") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
             OutlinedTextField(
-                value = "",
+                value = author,
                 onValueChange = { author = it },
                 label = { Text("Book Author") },
-                placeholder = { Text("Author: $author") },
+                placeholder = { Text("Author: ") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
             OutlinedTextField(
-                value = "",
+                value = genre,
                 onValueChange = { genre = it },
                 label = { Text("Book Genre (Optional)") },
-                placeholder = { Text("Genre: $genre") },
+                placeholder = { Text("Genre: ") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
             OutlinedTextField(
-                value = "",
+                value = pagesRead,
+                onValueChange = {
+                    if (it.isDigitsOnly()) { pagesRead = it }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                label = { Text("Read pages (Optional)") },
+                placeholder = { Text("Read pages: ") },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+            )
+
+            OutlinedTextField(
+                value = totalPages,
                 onValueChange = {
                     if (it.isDigitsOnly()) { totalPages = it }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Total pages") },
-                placeholder = { Text("Page count: $totalPages") },
+                placeholder = { Text("Page count: ") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
@@ -131,6 +144,7 @@ fun BookEditView(
                                 title = title,
                                 author = author,
                                 genre = if (genre == "") { "No genre" } else { genre },
+                                pagesRead = if (pagesRead == "") { "0" } else { pagesRead },
                                 pagesTotal = totalPages
                             )
 
