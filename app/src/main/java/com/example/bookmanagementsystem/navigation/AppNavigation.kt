@@ -28,7 +28,6 @@ fun AppNavigation() {
             BookEditView(
                 id = args.bookID,
                 onBookSubmit = {navController.popBackStack()},
-                onDeleteButtonClicked = {navController.navigate(BookList)}
             )
         }
         composable<BookItem> { backStackEntry ->
@@ -36,7 +35,8 @@ fun AppNavigation() {
             BookItemView(
                 id = args.bookID,
                 onUpdateButtonClicked = {navController.navigate(BookEdit(args.bookID))},
-                onBackButtonClicked = {navController.popBackStack()}
+                onBackButtonClicked = {navController.popBackStack()},
+                onDeleteButtonClicked = {navController.popBackStack()}
             )
         }
     }

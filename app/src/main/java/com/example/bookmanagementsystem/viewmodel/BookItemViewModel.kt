@@ -32,5 +32,4 @@ class BookItemViewModel(app: Application) : AndroidViewModel(app) {
             bookDB.deleteBook(book)
         }
     }
-
 }

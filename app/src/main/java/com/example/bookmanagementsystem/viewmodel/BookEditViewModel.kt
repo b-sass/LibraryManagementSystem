@@ -37,10 +37,4 @@ class BookEditViewModel(app: Application): AndroidViewModel(app) {
             bookDB.updateBook(book)
         }
     }
-
-    fun deleteBook(book: Book) {
-        viewModelScope.launch {
-            bookDB.deleteBook(book)
-        }
-    }
 }

@@ -1,6 +1,7 @@
 package com.example.bookmanagementsystem.view
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -20,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,6 +34,7 @@ fun BookItemView(
     id: Int,
     onUpdateButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
 ) {
 
     val book by viewModel.bookItem.collectAsStateWithLifecycle()
@@ -70,8 +73,21 @@ fun BookItemView(
             Text("Pages read: $pagesRead") // TODO
             Text("Total pages: $totalPages")
             Spacer(modifier = Modifier.padding(8.dp))
-            Button(onClick = { onUpdateButtonClicked() }) {
-                Text("Update book")
+            Row() {
+                Button(onClick = { onUpdateButtonClicked() }) {
+                    Text("Update book")
+                }
+
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                Button(
+                    onClick = {
+                        viewModel.deleteBook(book!!)
+                        onDeleteButtonClicked()
+                    }
+                ) {
+                    Text("Delete Book")
+                }
             }
         }
     }

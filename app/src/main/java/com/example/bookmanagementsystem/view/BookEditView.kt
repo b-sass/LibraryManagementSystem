@@ -36,7 +36,6 @@ fun BookEditView(
     viewModel: BookEditViewModel = viewModel(),
     id: Int?,
     onBookSubmit: () -> Unit,
-    onDeleteButtonClicked: () -> Unit,
     ) {
 
     if (id != null) {
@@ -176,22 +175,7 @@ fun BookEditView(
                 }
 
                 if (id != null) {
-                    Button(
-                        onClick = {
-                            scope.launch {
-                                snackbarHostState.currentSnackbarData?.dismiss()
-                                snackbarHostState.showSnackbar(
-                                    "Book $id deleted."
-                                )
-                            }
 
-                            viewModel.deleteBook(existingBook!!)
-
-                            onDeleteButtonClicked()
-                        }
-                    ) {
-                        Text("Delete Book")
-                    }
                 }
             }
         }
