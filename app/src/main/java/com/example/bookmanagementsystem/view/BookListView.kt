@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,8 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BasicAlertDialog
@@ -35,6 +32,8 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +62,13 @@ fun BookListView(
     var filter by remember { mutableStateOf(false) }
     var sort by remember { mutableStateOf(false) }
 
+    val filteredBooks by remember { derivedStateOf {
+        if (viewModel.appliedFilters.isEmpty()) {
+            books
+        } else {
+            books.filter { viewModel.appliedFilters.contains(it.genre) }
+        }
+    }}
     // GET BOOKS FROM DATABASE
     // FILTER OUT BOOKS BY GENRE
     // SORT BOOKS
@@ -108,8 +114,6 @@ fun BookListView(
 //            SortDialog(currentSort, onSortClicked = { sort = false }, onDismissRequest = { sort = false })
 //        }
 
-
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -117,7 +121,7 @@ fun BookListView(
                 .fillMaxWidth()
         ) {
             // Display total number of books
-            if (books.isEmpty()) {
+            if (books.isEmpty() && query.isEmpty()) {
                 Text(
                     text = "You don't have any books in your library.",
                     modifier = Modifier
@@ -125,7 +129,7 @@ fun BookListView(
                 )
             }
             // Differentiate between singular and plural books
-            else {
+            else if (books.isNotEmpty() && query.isEmpty()) {
                 Text(
                     text = "You have ${books.size} ${
                         if (books.size == 1) { "book" } else { "books" }
@@ -135,9 +139,9 @@ fun BookListView(
             }
 
             // Display list of books
-            if (books.isNotEmpty()) {
+            if (filteredBooks.isNotEmpty()) {
                 LazyColumn {
-                    items(books) { book ->
+                    items(filteredBooks) { book ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -262,7 +266,7 @@ private fun FilterDialog(
                     Text(
                         text = "Apply",
                         Modifier.clickable {
-                            viewModel.appliedFilters = appliedFilters
+                            viewModel.updateFilters(appliedFilters)
                             onDismissRequest()
                         }
                     )
