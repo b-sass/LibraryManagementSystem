@@ -24,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,8 +55,8 @@ fun BookItemView(
     var author by remember { mutableStateOf("") }
     var genre by remember { mutableStateOf("") }
     var dateAdded by remember { mutableStateOf("") }
-    var pagesRead by remember { mutableStateOf("") }
-    var totalPages by remember { mutableStateOf("") }
+    var pagesRead by remember { mutableIntStateOf(0) }
+    var totalPages by remember { mutableIntStateOf(1) }
 
     var confirmDelete by remember { mutableStateOf(false) }
 
@@ -64,8 +65,8 @@ fun BookItemView(
         author = book?.author ?: ""
         genre = book?.genre ?: ""
         dateAdded = if (book == null) { "" } else { book!!.dateAdded.toString() }
-        pagesRead = book?.pagesRead ?: ""
-        totalPages = book?.pagesTotal ?: ""
+        pagesRead = book?.pagesRead ?: 0
+        totalPages = book?.pagesTotal ?: 1
     }
 
     Scaffold(
@@ -94,7 +95,7 @@ fun BookItemView(
             Text("Genre: $genre")
             Text("Started reading: $dateAdded")
             Text("Release date: *Release Date*") // TODO
-            Text("Pages read: $pagesRead") // TODO
+            Text("Pages read: $pagesRead")
             Text("Total pages: $totalPages")
             Spacer(modifier = Modifier.padding(8.dp))
             Row() {

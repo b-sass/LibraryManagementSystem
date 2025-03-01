@@ -12,6 +12,6 @@ data class Book(
     val author: String,
     val genre: String = "No genre",
     val dateAdded: Date = Date(),
-    var pagesRead: String = "0",
-    val pagesTotal: String,
+    var pagesRead: Int = 0,
+    val pagesTotal: Int = 1,
 )

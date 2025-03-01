@@ -64,6 +64,7 @@ fun BookListView(
     var filter by remember { mutableStateOf(false) }
     var sort by remember { mutableStateOf(false) }
 
+    // Filter books according to applied filters
     val filteredBooks by remember { derivedStateOf {
         if (viewModel.appliedFilters.isEmpty()) {
             books
@@ -72,22 +73,28 @@ fun BookListView(
         }
     }}
 
+    // Sort already filtered books according to the current sort
     val sortedBooks = if (viewModel.appliedSort[1] == "Descending") {
-        filteredBooks.sortedByDescending {
-            when (viewModel.appliedSort[0]) {
-                "Title" -> it.title
-                "Pages read" -> it.pagesRead
-                "Pages total" -> it.pagesTotal
-                else -> it.title
+        if (viewModel.appliedSort[0] == "Title") { filteredBooks.sortedByDescending { it.title } }
+        else {
+            filteredBooks.sortedByDescending {
+                when (viewModel.appliedSort[0]) {
+                    "Pages read" -> it.pagesRead
+                    "Pages total" -> it.pagesTotal
+                    else -> it.pagesRead
+                }
             }
         }
+    // Ascending sort
     } else {
-        filteredBooks.sortedBy {
-            when (viewModel.appliedSort[0]) {
-                "Title" -> it.title
-                "Pages read" -> it.pagesRead
-                "Pages total" -> it.pagesTotal
-                else -> it.title
+        if (viewModel.appliedSort[0] == "Title") { filteredBooks.sortedBy { it.title } }
+        else {
+            filteredBooks.sortedBy {
+                when (viewModel.appliedSort[0]) {
+                    "Pages read" -> it.pagesRead
+                    "Pages total" -> it.pagesTotal
+                    else -> it.pagesRead
+                }
             }
         }
     }

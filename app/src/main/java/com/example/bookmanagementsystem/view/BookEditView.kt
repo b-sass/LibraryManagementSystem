@@ -15,6 +15,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,15 +48,15 @@ fun BookEditView(
     var title by remember { mutableStateOf(existingBook?.title ?: "") }
     var author by remember { mutableStateOf(existingBook?.author ?: "") }
     var genre by remember { mutableStateOf(existingBook?.genre ?: "") }
-    var pagesRead by remember { mutableStateOf(existingBook?.pagesRead ?: "") }
-    var totalPages by remember { mutableStateOf(existingBook?.pagesTotal ?: "") }
+    var pagesRead by remember { mutableIntStateOf(existingBook?.pagesRead ?: 0) }
+    var totalPages by remember { mutableIntStateOf(existingBook?.pagesTotal ?: 1) }
 
     LaunchedEffect(existingBook) {
         title = existingBook?.title ?: ""
         author = existingBook?.author ?: ""
         genre = existingBook?.genre ?: ""
-        pagesRead = existingBook?.pagesRead ?: ""
-        totalPages = existingBook?.pagesTotal ?: ""
+        pagesRead = existingBook?.pagesRead ?: 0
+        totalPages = existingBook?.pagesTotal ?: 1
     }
 
 
@@ -106,9 +107,9 @@ fun BookEditView(
             )
 
             OutlinedTextField(
-                value = pagesRead,
+                value = pagesRead.toString(),
                 onValueChange = {
-                    if (it.isDigitsOnly()) { pagesRead = it }
+                    if (it.isDigitsOnly()) { pagesRead = it.toInt() }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Read pages (Optional)") },
@@ -117,9 +118,9 @@ fun BookEditView(
             )
 
             OutlinedTextField(
-                value = totalPages,
+                value = totalPages.toString(),
                 onValueChange = {
-                    if (it.isDigitsOnly()) { totalPages = it }
+                    if (it.isDigitsOnly()) { totalPages = it.toInt() }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Total pages") },
@@ -132,18 +133,25 @@ fun BookEditView(
             ) {
                 Button(
                     onClick = {
-                        if (listOf(title, author, totalPages).any { s -> s.isEmpty() }) {
+                        if (title.isEmpty() || author.isEmpty() || totalPages == 1) {
                             scope.launch {
                                 snackbarHostState.currentSnackbarData?.dismiss()
                                 snackbarHostState.showSnackbar("Title, Author, and Total Pages fields cannot be empty.")
                             }
-                        } else {
+                        }
+                        else if (pagesRead > totalPages) {
+                            scope.launch {
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                                snackbarHostState.showSnackbar("Read pages cannot be greater than total pages.")
+                            }
+                        }
+                        else {
                             val newBook = Book(
                                 id = id ?: 0,
                                 title = title,
                                 author = author,
                                 genre = if (genre == "") { "No genre" } else { genre },
-                                pagesRead = if (pagesRead == "") { "0" } else { pagesRead },
+                                pagesRead = pagesRead,
                                 pagesTotal = totalPages
                             )
 
@@ -172,10 +180,6 @@ fun BookEditView(
                     Text(
                         if (id != null) { "Update Book" } else { "Add Book" }
                     )
-                }
-
-                if (id != null) {
-
                 }
             }
         }
