@@ -49,6 +49,7 @@ import com.example.bookmanagementsystem.data.Book
 import com.example.bookmanagementsystem.viewmodel.BookListViewModel
 import com.example.bookmanagementsystem.dialogs.FilterDialog
 import com.example.bookmanagementsystem.dialogs.SortDialog
+import java.util.Locale
 
 @Composable
 fun BookListView(
@@ -75,7 +76,7 @@ fun BookListView(
 
     // Sort already filtered books according to the current sort
     val sortedBooks = if (viewModel.appliedSort[1] == "Descending") {
-        if (viewModel.appliedSort[0] == "Title") { filteredBooks.sortedByDescending { it.title } }
+        if (viewModel.appliedSort[0] == "Title") { filteredBooks.sortedByDescending { it.title.lowercase(Locale.getDefault()) } }
         else {
             filteredBooks.sortedByDescending {
                 when (viewModel.appliedSort[0]) {
@@ -87,7 +88,7 @@ fun BookListView(
         }
     // Ascending sort
     } else {
-        if (viewModel.appliedSort[0] == "Title") { filteredBooks.sortedBy { it.title } }
+        if (viewModel.appliedSort[0] == "Title") { filteredBooks.sortedBy { it.title.lowercase(Locale.getDefault()) } }
         else {
             filteredBooks.sortedBy {
                 when (viewModel.appliedSort[0]) {
