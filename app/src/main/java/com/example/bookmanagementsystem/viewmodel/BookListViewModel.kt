@@ -24,7 +24,7 @@ class BookListViewModel(app: Application) : AndroidViewModel(app) {
     val books = _books.asStateFlow()
 
     var appliedFilters by mutableStateOf(emptyList<String>())
-    var currentSort by mutableStateOf(listOf("Alphabetically", "Descending"))
+    var appliedSort by mutableStateOf(listOf("Title", "Descending"))
 
     init {
         viewModelScope.launch {

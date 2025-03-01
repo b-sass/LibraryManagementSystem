@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,9 @@ fun SortDialog(
     viewModel: BookListViewModel,
     onDismissRequest: () -> Unit = {},
 ) {
+
+    val currentSort = remember { mutableStateListOf<String>() }
+    currentSort.addAll(viewModel.appliedSort)
 
     val sorts = listOf(
         "Title",
@@ -49,9 +54,36 @@ fun SortDialog(
                 Text("Sort by")
 
                 for (sort in sorts) {
-                    Row() {
+                    Row(
+                        modifier = Modifier.clickable {
+                            if (currentSort[0] != sort) {
+                                currentSort.clear()
+                                currentSort.addAll(listOf(sort, "Descending"))
+                            } else {
+                                val sortDirection = when (currentSort[1]) {
+                                    "Ascending" -> "Descending"
+                                    "Descending" -> "Ascending"
+                                    else -> "Ascending"
+                                }
+                                currentSort.clear()
+                                currentSort.addAll(listOf(sort, sortDirection))
+                            }
+                        }
+                    ) {
                         Text(sort)
-                        Icon(Icons.Filled.ArrowUpward, contentDescription = "Sort ascending")
+                        if (currentSort[0] == sort) {
+                            Spacer(modifier = Modifier.padding(8.dp))
+                            when (currentSort[1]) {
+                                "Ascending" -> Icon(
+                                    Icons.Filled.ArrowUpward,
+                                    contentDescription = "Sort ascending"
+                                )
+                                "Descending" -> Icon(
+                                    Icons.Filled.ArrowDownward,
+                                    contentDescription = "Sort descending"
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -66,7 +98,10 @@ fun SortDialog(
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text(
                         text = "Apply",
-                        Modifier.clickable { onDismissRequest() }
+                        Modifier.clickable {
+                            viewModel.appliedSort = currentSort
+                            onDismissRequest()
+                        }
                     )
                 }
             }

@@ -109,7 +109,7 @@ fun BookListView(
 
         // Sorting Dialog
         if (sort) {
-            SortDialog(onDismissRequest = { sort = false })
+            SortDialog(viewModel, onDismissRequest = { sort = false })
         }
 
         Column(
