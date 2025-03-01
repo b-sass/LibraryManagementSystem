@@ -109,7 +109,11 @@ fun BookEditView(
             OutlinedTextField(
                 value = pagesRead.toString(),
                 onValueChange = {
-                    if (it.isDigitsOnly()) { pagesRead = it.toInt() }
+                    try {
+                        if (it.isDigitsOnly()) { pagesRead = it.toInt() }
+                    } catch (e: NumberFormatException) {
+                        if (it == "") { pagesRead = 0 }
+                    }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Read pages (Optional)") },
@@ -120,7 +124,11 @@ fun BookEditView(
             OutlinedTextField(
                 value = totalPages.toString(),
                 onValueChange = {
-                    if (it.isDigitsOnly()) { totalPages = it.toInt() }
+                    try {
+                        if (it.isDigitsOnly()) { totalPages = it.toInt() }
+                    } catch (e: NumberFormatException) {
+                        if (it == "") { totalPages = 0 }
+                    }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Total pages") },
