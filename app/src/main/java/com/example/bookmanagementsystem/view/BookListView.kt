@@ -47,6 +47,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookmanagementsystem.data.Book
 import com.example.bookmanagementsystem.viewmodel.BookListViewModel
+import com.example.bookmanagementsystem.dialogs.FilterDialog
+import com.example.bookmanagementsystem.dialogs.SortDialog
 
 @Composable
 fun BookListView(
@@ -69,10 +71,6 @@ fun BookListView(
             books.filter { viewModel.appliedFilters.contains(it.genre) }
         }
     }}
-    // GET BOOKS FROM DATABASE
-    // FILTER OUT BOOKS BY GENRE
-    // SORT BOOKS
-    // DISPLAY BOOKS
 
     Scaffold(
         topBar = {
@@ -90,7 +88,7 @@ fun BookListView(
             } else {
                 DefaultBar(
                     onSearch = { searchToggle = true },
-                    onSortButtonClicked = { },
+                    onSortButtonClicked = { sort = true },
                     onFilterButtonClicked = { filter = true }
                 )
             }
@@ -110,9 +108,9 @@ fun BookListView(
         }
 
         // Sorting Dialog
-//        if (sort) {
-//            SortDialog(currentSort, onSortClicked = { sort = false }, onDismissRequest = { sort = false })
-//        }
+        if (sort) {
+            SortDialog(onDismissRequest = { sort = false })
+        }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -151,17 +149,16 @@ fun BookListView(
                                 }
                         ) {
                             Column {
-                                Text(book.title)
-                                Text(book.author)
+                                Row {
+                                    Text(book.title)
+                                    Text(book.genre)
 
-                            }
-                            Spacer(modifier = Modifier.weight(1f))
-                            Column(
-                                horizontalAlignment = Alignment.End
-                            ) {
-                                Text(book.genre)
-                                Text("Read: ${book.pagesRead} | Total: ${book.pagesTotal}")
+                                }
+                                Row {
+                                    Text(book.author)
+                                    Text("Read: ${book.pagesRead} | Total: ${book.pagesTotal}")
 
+                                }
                             }
                         }
                         HorizontalDivider()
@@ -211,68 +208,3 @@ private fun SearchBar(query: String, onQueryChange: (String) -> Unit = {}, onSea
         )}
     )
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun FilterDialog(
-    viewModel: BookListViewModel,
-    onDismissRequest: () -> Unit = {},
-) {
-    val appliedFilters = remember { mutableStateListOf<String>() }
-    val genres = remember { mutableStateListOf<String>() }
-
-    appliedFilters.addAll(viewModel.appliedFilters)
-
-    LaunchedEffect(genres) {
-        genres.addAll(viewModel.getGenres())
-    }
-
-    BasicAlertDialog(
-        onDismissRequest = { onDismissRequest() },
-    ) {
-        Surface(
-            shape = MaterialTheme.shapes.large,
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text("Genres")
-                for (genre in genres) {
-                    Row() {
-                        Checkbox(
-                            checked = appliedFilters.contains(genre),
-                            onCheckedChange = {
-                                if (appliedFilters.contains(genre)) {
-                                    appliedFilters.remove(genre)
-                                } else {
-                                    appliedFilters.add(genre)
-                                }
-                            }
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
-                        Text(genre)
-                    }
-                }
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Cancel",
-                        Modifier.clickable { onDismissRequest() }
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                    Text(
-                        text = "Apply",
-                        Modifier.clickable {
-                            viewModel.updateFilters(appliedFilters)
-                            onDismissRequest()
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
