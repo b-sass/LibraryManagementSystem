@@ -72,6 +72,26 @@ fun BookListView(
         }
     }}
 
+    val sortedBooks = if (viewModel.appliedSort[1] == "Descending") {
+        filteredBooks.sortedByDescending {
+            when (viewModel.appliedSort[0]) {
+                "Title" -> it.title
+                "Pages read" -> it.pagesRead
+                "Pages total" -> it.pagesTotal
+                else -> it.title
+            }
+        }
+    } else {
+        filteredBooks.sortedBy {
+            when (viewModel.appliedSort[0]) {
+                "Title" -> it.title
+                "Pages read" -> it.pagesRead
+                "Pages total" -> it.pagesTotal
+                else -> it.title
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             if (searchToggle) {
@@ -137,9 +157,9 @@ fun BookListView(
             }
 
             // Display list of books
-            if (filteredBooks.isNotEmpty()) {
+            if (sortedBooks.isNotEmpty()) {
                 LazyColumn {
-                    items(filteredBooks) { book ->
+                    items(sortedBooks) { book ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

@@ -58,7 +58,7 @@ fun SortDialog(
                         modifier = Modifier.clickable {
                             if (currentSort[0] != sort) {
                                 currentSort.clear()
-                                currentSort.addAll(listOf(sort, "Descending"))
+                                currentSort.addAll(listOf(sort, "Ascending"))
                             } else {
                                 val sortDirection = when (currentSort[1]) {
                                     "Ascending" -> "Descending"
