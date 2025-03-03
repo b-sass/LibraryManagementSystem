@@ -19,6 +19,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.bookmanagementsystem.viewmodel.BookListViewModel
 
@@ -47,9 +49,20 @@ fun FilterDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(16.dp)
             ) {
-                Text("Genres")
+                Text("Filter by genre", fontWeight = FontWeight.Bold)
                 for (genre in genres) {
-                    Row() {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                            .clickable {
+                                if (appliedFilters.contains(genre)) {
+                                    appliedFilters.remove(genre)
+                                } else {
+                                    appliedFilters.add(genre)
+                                }
+                            },
+                    ) {
                         Checkbox(
                             checked = appliedFilters.contains(genre),
                             onCheckedChange = {
@@ -70,12 +83,12 @@ fun FilterDialog(
                 ) {
                     Text(
                         text = "Cancel",
-                        Modifier.clickable { onDismissRequest() }
+                        modifier = Modifier.clickable { onDismissRequest() }
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text(
                         text = "Apply",
-                        Modifier.clickable {
+                        modifier = Modifier.clickable {
                             viewModel.updateFilters(appliedFilters)
                             onDismissRequest()
                         }

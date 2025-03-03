@@ -1,5 +1,7 @@
 package com.example.bookmanagementsystem.view
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -103,16 +105,26 @@ fun BookListView(
     Scaffold(
         topBar = {
             if (searchToggle) {
+                // Turn off search on back press
+                BackHandler {
+                    query = ""
+                    searchToggle = false
+                    viewModel.getBooks()
+                }
+
+                // Query book database based on search input
                 SearchBar(query, onQueryChange = {
                     query = it
                     if (query == "") {
                         viewModel.getBooks()
                     } else { viewModel.searchBooks("%$query%") }
+                // Reset search bar on close and display all books
             },  onSearchClose = {
                     query = ""
                     searchToggle = false
                     viewModel.getBooks()
             })
+            // Show default bar when search isn't used
             } else {
                 DefaultBar(
                     onSearch = { searchToggle = true },
@@ -121,6 +133,7 @@ fun BookListView(
                 )
             }
         },
+        // Move to add screen on button press
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onAddButtonClicked() },
@@ -130,7 +143,7 @@ fun BookListView(
         },
     ) { innerPadding ->
 
-//         Filter dialog
+        // Filter dialog
         if (filter) {
             FilterDialog(viewModel) { filter = false }
         }
@@ -176,21 +189,34 @@ fun BookListView(
                                     .fillMaxWidth()
                                     .padding(16.dp)
                             ) {
-                                Column {
-                                    Row {
-                                        Text(book.title)
-                                        Text(book.genre)
-
-                                    }
-                                    Row {
-                                        Text(book.author)
-                                        Text("Read: ${book.pagesRead} | Total: ${book.pagesTotal}")
-
-                                    }
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                ) {
+                                    Text(
+                                        text = book.title,
+                                        modifier = Modifier
+                                            .basicMarquee()
+                                    )
+                                    Text(
+                                        text = book.author,
+                                        modifier = Modifier
+                                            .basicMarquee()
+                                    )
+                                }
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f),
+                                    horizontalAlignment = Alignment.End
+                                ) {
+                                    Text(book.genre)
+                                    Text("Read: ${book.pagesRead} | Total: ${book.pagesTotal}")
                                 }
                             }
-                            HorizontalDivider()
                         }
+                        HorizontalDivider()
                     }
                 }
             }
@@ -215,6 +241,7 @@ private fun DefaultBar(onSearch: () -> Unit, onSortButtonClicked: () -> Unit, on
 @Composable
 private fun SearchBar(query: String, onQueryChange: (String) -> Unit = {}, onSearchClose: () -> Unit) {
     TopAppBar(
+        // Close search bar on back icon press
         navigationIcon = { IconButton(onClick = {onSearchClose()}) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }},
         title = { TextField(
             value = query,

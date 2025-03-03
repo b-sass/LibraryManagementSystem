@@ -21,6 +21,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.bookmanagementsystem.viewmodel.BookListViewModel
 
@@ -51,11 +53,15 @@ fun SortDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(16.dp)
             ){
-                Text("Sort by")
+                Text(text = "Sort by", fontWeight = FontWeight.Bold)
 
                 for (sort in sorts) {
                     Row(
-                        modifier = Modifier.clickable {
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
                             if (currentSort[0] != sort) {
                                 currentSort.clear()
                                 currentSort.addAll(listOf(sort, "Ascending"))
@@ -70,7 +76,10 @@ fun SortDialog(
                             }
                         }
                     ) {
-                        Text(sort)
+                        Text(
+                            text = sort,
+                            modifier = Modifier.padding(4.dp)
+                        )
                         if (currentSort[0] == sort) {
                             Spacer(modifier = Modifier.padding(8.dp))
                             when (currentSort[1]) {
@@ -93,12 +102,12 @@ fun SortDialog(
                 ) {
                     Text(
                         text = "Cancel",
-                        Modifier.clickable { onDismissRequest() }
+                        modifier = Modifier.clickable { onDismissRequest() }
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text(
                         text = "Apply",
-                        Modifier.clickable {
+                        modifier = Modifier.clickable {
                             viewModel.appliedSort = currentSort
                             onDismissRequest()
                         }

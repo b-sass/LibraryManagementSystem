@@ -27,6 +27,13 @@ class BookItemViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun updatePageCount(pagesRead: Int) {
+        viewModelScope.launch {
+            _bookItem.value?.pagesRead = pagesRead
+            bookDB.updateBook(_bookItem.value!!)
+        }
+    }
+
     fun deleteBook(book: Book) {
         viewModelScope.launch {
             bookDB.deleteBook(book)
