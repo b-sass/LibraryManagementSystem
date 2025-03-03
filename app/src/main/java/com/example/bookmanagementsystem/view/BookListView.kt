@@ -168,28 +168,29 @@ fun BookListView(
             if (sortedBooks.isNotEmpty()) {
                 LazyColumn {
                     items(sortedBooks) { book ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                                .clickable {
-                                    onBookItemClicked(book.id)
-                                }
+                        Column(
+                            modifier = Modifier.clickable { onBookItemClicked(book.id) }
                         ) {
-                            Column {
-                                Row {
-                                    Text(book.title)
-                                    Text(book.genre)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Column {
+                                    Row {
+                                        Text(book.title)
+                                        Text(book.genre)
 
-                                }
-                                Row {
-                                    Text(book.author)
-                                    Text("Read: ${book.pagesRead} | Total: ${book.pagesTotal}")
+                                    }
+                                    Row {
+                                        Text(book.author)
+                                        Text("Read: ${book.pagesRead} | Total: ${book.pagesTotal}")
 
+                                    }
                                 }
                             }
+                            HorizontalDivider()
                         }
-                        HorizontalDivider()
                     }
                 }
             }

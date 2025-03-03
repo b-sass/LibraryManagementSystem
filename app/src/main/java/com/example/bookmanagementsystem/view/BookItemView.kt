@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookmanagementsystem.viewmodel.BookItemViewModel
-import com.example.bookmanagementsystem.viewmodel.BookListViewModel
+import com.example.bookmanagementsystem.dialogs.DeleteDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +60,7 @@ fun BookItemView(
 
     var confirmDelete by remember { mutableStateOf(false) }
 
+    // Populate book data from existing book
     LaunchedEffect(book) {
         title = book?.title ?: ""
         author = book?.author ?: ""
@@ -78,8 +79,9 @@ fun BookItemView(
         }
     ) { innerPadding ->
 
+        // Make sure if user wants to delete book
         if (confirmDelete) {
-            ConfirmationDialog(
+            DeleteDialog(
                 onConfirmation = {
                     viewModel.deleteBook(book!!)
                     confirmDelete = false
@@ -89,6 +91,7 @@ fun BookItemView(
             )
         }
 
+        // Display book data
         Column(modifier = Modifier.padding(innerPadding)) {
             Text("Title: $title")
             Text("Author: $author")
@@ -107,50 +110,10 @@ fun BookItemView(
 
                 Button(
                     onClick = {
-//                        viewModel.deleteBook(book!!)
-//                        onDeleteButtonClicked()
                         confirmDelete = true
                     }
                 ) {
                     Text("Delete Book")
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ConfirmationDialog(
-    onConfirmation: () -> Unit,
-    onDismissRequest: () -> Unit = {},
-) {
-
-    BasicAlertDialog(
-        onDismissRequest = onDismissRequest,
-    ) {
-        Surface(
-            shape = MaterialTheme.shapes.large,
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text("Are you sure you want to delete this book?")
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Button(
-                        onClick = { onConfirmation() },
-                    ) {
-                        Text("Yes")
-                    }
-                    Button(
-                        onClick = { onDismissRequest() },
-                    ) {
-                        Text("No")
-                    }
                 }
             }
         }

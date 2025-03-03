@@ -22,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
@@ -39,18 +40,21 @@ fun BookEditView(
     onBookSubmit: () -> Unit,
     ) {
 
+    // Get book by ID if editing
     if (id != null) {
         viewModel.getBookByID(id)
     }
 
     val existingBook by viewModel.currentBook.collectAsStateWithLifecycle()
 
-    var title by remember { mutableStateOf(existingBook?.title ?: "") }
-    var author by remember { mutableStateOf(existingBook?.author ?: "") }
-    var genre by remember { mutableStateOf(existingBook?.genre ?: "") }
-    var pagesRead by remember { mutableIntStateOf(existingBook?.pagesRead ?: 0) }
-    var totalPages by remember { mutableIntStateOf(existingBook?.pagesTotal ?: 1) }
+    // Text field states
+    var title by remember { mutableStateOf("") }
+    var author by remember { mutableStateOf("") }
+    var genre by remember { mutableStateOf("") }
+    var pagesRead by remember { mutableIntStateOf(0) }
+    var totalPages by remember { mutableIntStateOf( 1) }
 
+    // Populate text fields with current book data if found
     LaunchedEffect(existingBook) {
         title = existingBook?.title ?: ""
         author = existingBook?.author ?: ""
@@ -59,11 +63,12 @@ fun BookEditView(
         totalPages = existingBook?.pagesTotal ?: 1
     }
 
-
     // Snackbar coroutine
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Keyboard focus
+    val focusManager = LocalFocusManager.current
 
     Scaffold(
         topBar = {
@@ -82,6 +87,7 @@ fun BookEditView(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Book Title
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
@@ -90,6 +96,7 @@ fun BookEditView(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
+            // Book Author
             OutlinedTextField(
                 value = author,
                 onValueChange = { author = it },
@@ -98,6 +105,7 @@ fun BookEditView(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
+            // Book Genre
             OutlinedTextField(
                 value = genre,
                 onValueChange = { genre = it },
@@ -106,6 +114,7 @@ fun BookEditView(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
+            // Book Pages Read
             OutlinedTextField(
                 value = pagesRead.toString(),
                 onValueChange = {
@@ -115,12 +124,14 @@ fun BookEditView(
                         if (it == "") { pagesRead = 0 }
                     }
                 },
+                // Limit keyboard input to numbers only
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Read pages (Optional)") },
                 placeholder = { Text("Read pages: ") },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             )
 
+            // Book Total Pages
             OutlinedTextField(
                 value = totalPages.toString(),
                 onValueChange = {
@@ -130,6 +141,7 @@ fun BookEditView(
                         if (it == "") { totalPages = 0 }
                     }
                 },
+                // Limit keyboard input to numbers only
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Total pages") },
                 placeholder = { Text("Page count: ") },
@@ -141,7 +153,11 @@ fun BookEditView(
             ) {
                 Button(
                     onClick = {
-                        if (title.isEmpty() || author.isEmpty() || totalPages == 1) {
+                        // Hide keyboard
+                        focusManager.clearFocus()
+
+                        // Validate user input
+                        if (title.isEmpty() || author.isEmpty() || totalPages < 1) {
                             scope.launch {
                                 snackbarHostState.currentSnackbarData?.dismiss()
                                 snackbarHostState.showSnackbar("Title, Author, and Total Pages fields cannot be empty.")
@@ -153,6 +169,7 @@ fun BookEditView(
                                 snackbarHostState.showSnackbar("Read pages cannot be greater than total pages.")
                             }
                         }
+                        // Create new book object
                         else {
                             val newBook = Book(
                                 id = id ?: 0,
@@ -174,6 +191,7 @@ fun BookEditView(
                                 )
                             }
 
+                            // Add or update book
                             if (id != null) {
                                 viewModel.updateBook(newBook)
                             } else {
@@ -185,6 +203,7 @@ fun BookEditView(
                     },
 
                     ) {
+                    // Change button text based on whether adding or updating book
                     Text(
                         if (id != null) { "Update Book" } else { "Add Book" }
                     )
