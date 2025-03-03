@@ -1,5 +1,6 @@
 package com.example.bookmanagementsystem.view
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -37,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -97,6 +99,12 @@ fun BookItemView(
         }
     ) { innerPadding ->
 
+        // Update page count on back button press
+        BackHandler {
+            viewModel.updatePageCount(pagesRead)
+            onBackButtonClicked()
+        }
+
         // Make sure if user wants to delete book
         if (showDelete) {
             DeleteDialog(
@@ -150,6 +158,21 @@ fun BookItemView(
                         }
                     }) {
                         Icon(Icons.Filled.Add, "Increment page count")
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (pagesRead == totalPages) {
+                        Text(text = "You have finished reading this book!", color = Color.Green)
+                    }
+                    else {
+                        Text("You have read ${pagesRead * 100 / totalPages}% of this book.")
+                        Text("You have ${totalPages - pagesRead} pages left.")
                     }
                 }
 

@@ -40,6 +40,7 @@ fun SortDialog(
         "Title",
         "Pages read",
         "Pages total",
+        "Progress"
     )
 
     BasicAlertDialog(

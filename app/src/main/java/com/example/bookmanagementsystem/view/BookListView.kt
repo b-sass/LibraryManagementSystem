@@ -84,6 +84,7 @@ fun BookListView(
                 when (viewModel.appliedSort[0]) {
                     "Pages read" -> it.pagesRead
                     "Pages total" -> it.pagesTotal
+                    "Progress" -> it.pagesRead / it.pagesTotal
                     else -> it.pagesRead
                 }
             }
@@ -96,6 +97,7 @@ fun BookListView(
                 when (viewModel.appliedSort[0]) {
                     "Pages read" -> it.pagesRead
                     "Pages total" -> it.pagesTotal
+                    "Progress" -> it.pagesRead * 100 / it.pagesTotal
                     else -> it.pagesRead
                 }
             }
@@ -212,7 +214,10 @@ fun BookListView(
                                     horizontalAlignment = Alignment.End
                                 ) {
                                     Text(book.genre)
-                                    Text("Read: ${book.pagesRead} | Total: ${book.pagesTotal}")
+                                    Text(
+                                        text = "Read: ${book.pagesRead} | Total: ${book.pagesTotal}",
+                                        color = if (book.pagesRead == book.pagesTotal) { Color.Green } else { MaterialTheme.colorScheme.onSurface }
+                                    )
                                 }
                             }
                         }
