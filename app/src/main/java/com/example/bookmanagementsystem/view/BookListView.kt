@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -137,10 +138,12 @@ fun BookListView(
         },
         // Move to add screen on button press
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = { onAddButtonClicked() },
             ) {
                 Icon(Icons.Filled.Add, "Add book")
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text("Add book")
             }
         },
     ) { innerPadding ->
