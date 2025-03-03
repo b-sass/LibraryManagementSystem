@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.bookmanagementsystem.viewmodel.BookListViewModel
@@ -33,6 +32,7 @@ fun FilterDialog(
     val appliedFilters = remember { mutableStateListOf<String>() }
     val genres = remember { mutableStateListOf<String>() }
 
+    // Get applied filters from the viewModel
     appliedFilters.addAll(viewModel.appliedFilters)
 
     LaunchedEffect(genres) {
@@ -56,6 +56,7 @@ fun FilterDialog(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                             .clickable {
+                                // Toggle filter
                                 if (appliedFilters.contains(genre)) {
                                     appliedFilters.remove(genre)
                                 } else {
@@ -77,6 +78,8 @@ fun FilterDialog(
                         Text(genre)
                     }
                 }
+
+                // Apply and cancel buttons
                 Row(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier.fillMaxWidth()

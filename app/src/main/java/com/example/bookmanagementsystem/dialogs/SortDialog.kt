@@ -21,7 +21,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.bookmanagementsystem.viewmodel.BookListViewModel
@@ -34,8 +33,12 @@ fun SortDialog(
 ) {
 
     val currentSort = remember { mutableStateListOf<String>() }
+    // Get current sort list from viewmodel
+    // Item 0 - Sort Type
+    // Item 1 - Sort Direction
     currentSort.addAll(viewModel.appliedSort)
 
+    // Possible sorts
     val sorts = listOf(
         "Title",
         "Pages read",
@@ -64,14 +67,17 @@ fun SortDialog(
                             .fillMaxWidth()
                             .clickable {
                             if (currentSort[0] != sort) {
+                                // Replace current sort with selected sort
                                 currentSort.clear()
                                 currentSort.addAll(listOf(sort, "Ascending"))
                             } else {
+                                // Toggle sort direction
                                 val sortDirection = when (currentSort[1]) {
                                     "Ascending" -> "Descending"
                                     "Descending" -> "Ascending"
                                     else -> "Ascending"
                                 }
+                                // Replace current sort with selected sort and direction
                                 currentSort.clear()
                                 currentSort.addAll(listOf(sort, sortDirection))
                             }
@@ -81,6 +87,7 @@ fun SortDialog(
                             text = sort,
                             modifier = Modifier.padding(4.dp)
                         )
+                        // Add direction icon if sort is selected
                         if (currentSort[0] == sort) {
                             Spacer(modifier = Modifier.padding(8.dp))
                             when (currentSort[1]) {
@@ -97,6 +104,7 @@ fun SortDialog(
                     }
                 }
 
+                // Apply and Cancel buttons
                 Row(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier.fillMaxWidth()

@@ -27,6 +27,7 @@ class BookItemViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // Update page count of current book
     fun updatePageCount(pagesRead: Int) {
         viewModelScope.launch {
             _bookItem.value?.pagesRead = pagesRead

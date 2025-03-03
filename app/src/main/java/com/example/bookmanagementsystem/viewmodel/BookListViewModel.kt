@@ -62,15 +62,4 @@ class BookListViewModel(app: Application) : AndroidViewModel(app) {
     fun updateFilters(filters: List<String>) {
         appliedFilters = filters
     }
-
-    fun filterBooks(books: List<Book>): List<Book> {
-        val filteredBooks = if (appliedFilters.isEmpty()) {
-            books
-        } else {
-            books.filter { book ->
-                appliedFilters.contains(book.genre)
-            }
-        }
-        return filteredBooks
-    }
 }

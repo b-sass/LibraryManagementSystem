@@ -19,10 +19,14 @@ fun AppNavigation() {
         navController = navController,
         startDestination = BookList
     ) {
+        // Book List View
         composable<BookList> { BookListView(
             onBookItemClicked = {navController.navigate(BookItem(it))},
+            // Reuse book edit view to add new books
             onAddButtonClicked = {navController.navigate(BookEdit())},
         ) }
+
+        // Book Edit View
         composable<BookEdit> { backStackEntry ->
             val args = backStackEntry.toRoute<BookEdit>()
             BookEditView(
@@ -30,6 +34,8 @@ fun AppNavigation() {
                 onBookSubmit = {navController.popBackStack()},
             )
         }
+
+        // Book Item VIew
         composable<BookItem> { backStackEntry ->
             val args = backStackEntry.toRoute<BookItem>()
             BookItemView(
@@ -47,9 +53,11 @@ fun AppNavigation() {
 object BookList
 @Serializable
 data class BookEdit(
+    // Possible values passed to the Book Edit view
     val bookID: Int? = null
 )
 @Serializable
 data class BookItem(
+    // Value passed to the Book Item view
     val bookID: Int
 )

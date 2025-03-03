@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,27 +17,20 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.bookmanagementsystem.data.Book
 import com.example.bookmanagementsystem.viewmodel.BookListViewModel
 import com.example.bookmanagementsystem.dialogs.FilterDialog
 import com.example.bookmanagementsystem.dialogs.SortDialog
@@ -202,11 +193,13 @@ fun BookListView(
                                     Text(
                                         text = book.title,
                                         modifier = Modifier
+                                            // Animate text if too long
                                             .basicMarquee()
                                     )
                                     Text(
                                         text = book.author,
                                         modifier = Modifier
+                                            // Animate text if too long
                                             .basicMarquee()
                                     )
                                 }
@@ -216,6 +209,7 @@ fun BookListView(
                                         .weight(1f),
                                     horizontalAlignment = Alignment.End
                                 ) {
+                                    // Change text colour depending on whether book is finished
                                     Text(book.genre)
                                     Text(
                                         text = "Read: ${book.pagesRead} | Total: ${book.pagesTotal}",
@@ -238,6 +232,7 @@ private fun DefaultBar(onSearch: () -> Unit, onSortButtonClicked: () -> Unit, on
     TopAppBar(
         title = { Text("MAD Library") },
         actions = {
+            // App Bar buttons
             IconButton(onClick = {onSearch()}) { Icon(Icons.Filled.Search, "Search") }
             IconButton(onClick = {onSortButtonClicked()}) { Icon(Icons.AutoMirrored.Filled.Sort, "Sort") }
             IconButton(onClick = {onFilterButtonClicked()}) { Icon(Icons.Filled.FilterList, "Filter") }
@@ -255,6 +250,7 @@ private fun SearchBar(query: String, onQueryChange: (String) -> Unit = {}, onSea
             value = query,
             onValueChange = {onQueryChange(it)},
             placeholder = { Text("Search") },
+            singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .border(1.dp, Color.Transparent),

@@ -73,6 +73,7 @@ fun BookEditView(
     Scaffold(
         topBar = {
             TopAppBar(
+                // Change title based on whether adding or editing book
                 title = { Text(if (id != null) {"Editing book $id"} else {"Add book"}) },
             )
         },
@@ -118,6 +119,8 @@ fun BookEditView(
             OutlinedTextField(
                 value = pagesRead.toString(),
                 onValueChange = {
+                    // Ints only, empty string defaults to 0
+                    // Can't add more pages than int max value
                     try {
                         if (it.isDigitsOnly()) { pagesRead = it.toInt() }
                     } catch (e: NumberFormatException) {
@@ -135,6 +138,8 @@ fun BookEditView(
             OutlinedTextField(
                 value = totalPages.toString(),
                 onValueChange = {
+                    // Ints only, empty string defaults to 0
+                    // Can't add more pages than int max value
                     try {
                         if (it.isDigitsOnly()) { totalPages = it.toInt() }
                     } catch (e: NumberFormatException) {
@@ -163,6 +168,7 @@ fun BookEditView(
                                 snackbarHostState.showSnackbar("Title, Author, and Total Pages fields cannot be empty.")
                             }
                         }
+                        // Pages read cannot be greater than total pages
                         else if (pagesRead > totalPages) {
                             scope.launch {
                                 snackbarHostState.currentSnackbarData?.dismiss()
@@ -180,6 +186,7 @@ fun BookEditView(
                                 pagesTotal = totalPages
                             )
 
+                            // Adding / Update snackbar
                             scope.launch {
                                 snackbarHostState.currentSnackbarData?.dismiss()
                                 snackbarHostState.showSnackbar(

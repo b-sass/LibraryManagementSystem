@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -51,6 +50,7 @@ fun DeleteDialog(
                     Spacer(Modifier.padding(8.dp))
                     Text(
                         text = "Delete",
+                        // Only delete book when delete button is clicked
                         modifier = Modifier.clickable { onConfirmation() }
                     )
                 }
